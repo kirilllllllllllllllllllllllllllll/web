@@ -1,0 +1,12 @@
+{% extends "base_teacher.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+    <a href="add_student" class="btn btn-primary">Добавить ученика</a>
+    <a href="list_students" class="btn btn-primary">Список учеников</a>
+    <a href="add_exersize" class="btn btn-primary">Добавить задачу</a>
+{% endif %}
+
+<h1>Записи в блоге</h1>
+{% endblock %}
