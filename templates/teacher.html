@@ -1,0 +1,23 @@
+{% extends "base_teacher.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+    <center><a href="add_student" class="btn btn-primary">Добавить ученика</a>
+    <a href="list_students" class="btn btn-primary">Список учеников</a>
+        <a href="add_exersize" class="btn btn-primary">Добавить задачу</a></center>
+<center><h1>Задачи</h1></center>
+{% for item in exercises%}
+<center>
+<div class="col-md6 border rounded">
+    <h2>{{item.name}}</h2>
+    <div>
+        задание для ваших учеников
+    </div>
+    <a href="look_exercise/{{item.id}}" class="btn btn-success">Посмотреть результаты</a>
+</div>
+</center>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base_teacher.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+<center><a href="teacher" class="btn btn-primary">Вернуться</a></center>
+{% endif %}
+
+<center><table border="2" width="70%">
+{% for item in data %}
+        <tr>
+    <td bgcolor="lightblue">{{item['name']}}</td>
+    <td>{{item['surname']}}</td>
+    <td bgcolor="lightblue">{{item['email']}}</td>
+  </tr>
+    {% endfor %}
+</table></center>
+{% endblock %}

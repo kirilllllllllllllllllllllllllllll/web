@@ -1,0 +1,20 @@
+{% extends "base_student.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+<center><h1>Задачи</h1></center>
+{% for item in exercises%}
+<center>
+<div class="col-md6 border rounded">
+    <h2>{{item.name}}</h2>
+    <div>
+        Задание от {{item.surname_teacher}} {{item.name_teacher}}
+    </div>
+    <a href="do_exercise/{{item.id}}" class="btn btn-success">Решить задание</a>
+</div>
+</center>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
