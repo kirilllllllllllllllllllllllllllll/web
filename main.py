@@ -1,11 +1,13 @@
 from flask import Flask, render_template, redirect
-from data import db_session
+from data import db_session, users_api
 from forms.register_teacher import RegisterTeacher
 from forms.login_teacher import LoginTeacher
 from forms.add_student import AddStudent
 from forms.add_exersize import AddExersize
 from data.user import User
 from data.exersize import Exersize
+
+from requests import get
 
 from flask_login import login_user
 from flask_login import login_required
@@ -206,8 +208,17 @@ def add_exersize():
     return render_template('add_exersize.html', title='Добавление задачи', form=form)
 
 
+@app.route('/list_students')
+def list_students():
+    users = get('http://localhost:8080/api/students/' + current_user.students).json()
+    print(users)
+    users = [{'email': 'почта', 'name': 'имя', 'surname': 'фамилия'}] + users['students']
+    return render_template('list_students.html', title='Список учеников', data=users)
+
+
 if __name__ == '__main__':
     db_session.global_init("db/vklasse.db")
     db_sess = db_session.create_session()
     print(os.getcwd() + '\statiс\img')
+    app.register_blueprint(users_api.blueprint)
     app.run(port=8080, host='127.0.0.1')
