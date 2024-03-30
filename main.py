@@ -1,11 +1,12 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, url_for
 from data import db_session, users_api
 from forms.register_teacher import RegisterTeacher
 from forms.login_teacher import LoginTeacher
+from forms.do_exersize import DoExercise
 from forms.add_student import AddStudent
 from forms.add_exersize import AddExersize
 from data.user import User
-from data.exersize import Exersize
+from data.exersize import Exercise
 
 from requests import get
 
@@ -107,10 +108,11 @@ def teacher():
         if current_user.type != 'учитель':
             logout()
     except Exception:
-        pass
-    # db_sess = db_session.create_session()
-    # news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("teacher.html")
+        return render_template("teacher.html",
+                               exercises=[])
+    else:
+        db_sess = db_session.create_session()
+        return render_template("teacher.html", exercises=db_sess.query(Exercise).filter(Exercise.teacher == current_user.id))
 
 
 @app.route("/")
@@ -132,8 +134,17 @@ def student():
         if current_user.type != 'ученик':
             logout()
     except Exception:
-        pass
-    return render_template("student.html")
+        return render_template("student.html", exercises=[])
+    else:
+        db_sess = db_session.create_session()
+        name = str(current_user.id)
+        data = db_sess.query(Exercise).all()
+        data2 = []
+        for i in data:
+            if name in i.students:
+                data2.append(i)
+        print(data2)
+        return render_template("student.html", exercises=data2)
 
 
 @app.route('/add_student', methods=['GET', 'POST'])
@@ -148,8 +159,12 @@ def add_student():
                 st = teacher.students
                 if st == '0':
                     st = str(user.id)
-                else:
+                elif str(user.id) not in st:
                     st = st + ', ' + str(user.id)
+                else:
+                    return render_template('add_student.html',
+                                           message="Пользователь с такой почтой уже является вашим учеником",
+                                           form=form)
                 teacher.students = st
                 db_sess.commit()
                 return redirect("/teacher")
@@ -175,12 +190,16 @@ def add_exersize():
 
             type = f.filename.split('.')[-1]
             if type in ['jpg', 'jpeg', 'png', 'bmp']:
-                exersize = Exersize(
+                exersize = Exercise(
                     name=form.name.data,
                     content=form.content.data,
                     students=current_user.students,
+                    right_answer=form.right_answer.data,
                     teacher=current_user.id,
-                    file='0'
+                    file='0',
+                    results='0',
+                    name_teacher=current_user.name,
+                    surname_teacher=current_user.surname
                 )
                 db_sess.add(exersize)
                 db_sess.commit()
@@ -194,12 +213,16 @@ def add_exersize():
             else:
                 return render_template('add_exersize.html', message="Неверный формат", title='Добавление задачи', form=form)
         else:
-            exersize = Exersize(
+            exersize = Exercise(
                 name=form.name.data,
                 content=form.content.data,
                 students=current_user.students,
+                right_answer=form.right_answer.data,
                 teacher=current_user.id,
-                file='0'
+                file='0',
+                results='0',
+                name_teacher=current_user.name,
+                surname_teacher=current_user.surname
             )
             db_sess.add(exersize)
             db_sess.commit()
@@ -214,6 +237,45 @@ def list_students():
     print(users)
     users = [{'email': 'почта', 'name': 'имя', 'surname': 'фамилия'}] + users['students']
     return render_template('list_students.html', title='Список учеников', data=users)
+
+
+@app.route('/look_exercise/<id>')
+def look_exercise(id):
+    db_sess = db_session.create_session()
+    exercise = db_sess.query(Exercise).filter(Exercise.id == id, Exercise.teacher == current_user.id).first()
+    if exercise:
+        st = exercise.results
+        data = list(map(lambda a: (a[1:a.find(', ')], a[a.find(', ') + 2:-1]), st.split('; ')))
+        return render_template('look_exercise.html', title='Результаты', data=data)
+    else:
+        pass
+
+
+@app.route('/do_exercise/<int:id>', methods=['GET', 'POST'])
+def do_exersize(id):
+    db_sess = db_session.create_session()
+    exercise = db_sess.query(Exercise).filter(Exercise.id == id).first()
+    form = DoExercise()
+    if form.validate_on_submit():
+        answer = form.answer.data
+        if answer == exercise.right_answer:
+            if exercise.results == '0':
+                exercise.results = f'({current_user.surname} {current_user.name}, +)'
+            else:
+                exercise.results += f'; ({current_user.surname} {current_user.name}, +)'
+        else:
+            if exercise.results == '0':
+                exercise.results = f'({current_user.surname} {current_user.name}, -)'
+            else:
+                exercise.results += f'; ({current_user.surname} {current_user.name}, -)'
+        st = exercise.students
+        ids = st.split(', ')
+        ids.remove(str(current_user.id))
+        exercise.students = ', '.join(ids)
+        db_sess.commit()
+        return redirect('/student')
+    return render_template('do_exercise.html', title='Решение задания', form=form, exercise=exercise)
+
 
 
 if __name__ == '__main__':

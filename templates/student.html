@@ -3,8 +3,18 @@
 {% block content %}
 
 {% if current_user.is_authenticated %}
-    <a href="news" class="btn btn-secondary">Задачи</a>
+<center><h1>Задачи</h1></center>
+{% for item in exercises%}
+<center>
+<div class="col-md6 border rounded">
+    <h2>{{item.name}}</h2>
+    <div>
+        Задание от {{item.surname_teacher}} {{item.name_teacher}}
+    </div>
+    <a href="do_exercise/{{item.id}}" class="btn btn-success">Решить задание</a>
+</div>
+</center>
+{% endfor %}
 {% endif %}
 
-<h1>воворвоовов</h1>
 {% endblock %}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet"
@@ -11,14 +11,14 @@
 </head>
 <body>
 <h1><center>ВКлассе</center></h1>
-<div>Страница ученика</div>
+<div><center>Страница ученика</center></div>
 <nav>{% if current_user.is_authenticated %}
-    <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
+    <center><a class="navbar-brand" href="/logout">{{ current_user.name }}</a></center>
     {% else %}
-    <p>
+    <center><p>
         <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
         <a class="btn btn-success" href="/login">Войти</a>
-    </p>
+    </p></center>
     {% endif %}
 </nav>
 {% block content %}{% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base_teacher.html" %}
 
 {% block content %}
-<h1>Добавление задачи</h1>
+<h1><center>Добавление задачи</center></h1>
 <form method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>
@@ -17,6 +17,15 @@
         {{ form.content.label }}<br>
         {{ form.content(class="form-control") }}<br>
         {% for error in form.content.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.right_answer.label }}<br>
+        {{ form.right_answer(class="form-control") }}<br>
+        {% for error in form.right_answer.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>

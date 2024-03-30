@@ -1,0 +1,24 @@
+{% extends "base_student.html" %}
+
+{% block content %}
+<center><h1>Решение задачи</h1></center>
+<center><h2>Условие:</h2></center>
+<center><div>{{exercise.content}}</div></center>
+ {% if exercise.file != '0' %}
+<center><img src="/static/img/{{exercise.file}}"></center>
+ {% endif %}
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.answer.label }}<br>
+        {{ form.answer(class="form-control") }}<br>
+        {% for error in form.answer.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}
