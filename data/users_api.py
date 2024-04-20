@@ -9,6 +9,7 @@ blueprint = flask.Blueprint(
 )
 
 
+# получение списка учеников, id которых есть в строке
 @blueprint.route('/api/students/<st>')
 def get_students(st):
     db_sess = db_session.create_session()

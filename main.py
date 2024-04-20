@@ -17,6 +17,7 @@ from flask_login import logout_user
 from flask_login import current_user
 import os
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kirik1234pro_secret_key'
 app.config['UPLOAD_FOLDER'] = os.getcwd() + "\static\img"
@@ -25,7 +26,7 @@ app.config['UPLOAD_FOLDER'] = os.getcwd() + "\static\img"
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-
+# выход из аккаунта
 @app.route('/logout')
 @login_required
 def logout():
@@ -39,6 +40,7 @@ def load_teacher(teacher_id):
     return db_sess.query(User).get(teacher_id)
 
 
+# регистрация
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterTeacher()
@@ -82,6 +84,7 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
+# вход в аккаунт
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginTeacher()
@@ -102,6 +105,7 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
+# страница учителя
 @app.route("/teacher")
 def teacher():
     try:
@@ -115,6 +119,7 @@ def teacher():
         return render_template("teacher.html", exercises=db_sess.query(Exercise).filter(Exercise.teacher == current_user.id))
 
 
+# главная страница приложения с кнопками регистрации и входа в аккаунт
 @app.route("/")
 def index():
     # db_sess = db_session.create_session()
@@ -128,6 +133,7 @@ def load_student(student_id):
     return db_sess.query(User).get(student_id)
 
 
+# страница ученика
 @app.route("/student")
 def student():
     try:
@@ -147,6 +153,7 @@ def student():
         return render_template("student.html", exercises=data2)
 
 
+# добавление ученика (только для учителя!)
 @app.route('/add_student', methods=['GET', 'POST'])
 def add_student():
     form = AddStudent()
@@ -179,6 +186,7 @@ def add_student():
     return render_template('add_student.html', title='Авторизация', form=form)
 
 
+# добавление домашнего задания
 @app.route('/add_exersize', methods=['GET', 'POST'])
 def add_exersize():
     form = AddExersize()
@@ -231,6 +239,7 @@ def add_exersize():
     return render_template('add_exersize.html', title='Добавление задачи', form=form)
 
 
+# вывод списка учеников
 @app.route('/list_students')
 def list_students():
     users = get('http://localhost:8080/api/students/' + current_user.students).json()
@@ -239,6 +248,7 @@ def list_students():
     return render_template('list_students.html', title='Список учеников', data=users)
 
 
+# просмотр результатов задания
 @app.route('/look_exercise/<id>')
 def look_exercise(id):
     db_sess = db_session.create_session()
@@ -251,6 +261,7 @@ def look_exercise(id):
         pass
 
 
+# выполнение домашнего задания
 @app.route('/do_exercise/<int:id>', methods=['GET', 'POST'])
 def do_exersize(id):
     db_sess = db_session.create_session()

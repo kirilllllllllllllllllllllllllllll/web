@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy_serializer import SerializerMixin
 
 
+# таблица пользователя
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'user'
 

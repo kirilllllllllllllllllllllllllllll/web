@@ -1,6 +1,7 @@
 import sqlalchemy
 from .db_session import SqlAlchemyBase
 
+# таблица задания
 class Exercise(SqlAlchemyBase):
     __tablename__ = 'exersize'
 
